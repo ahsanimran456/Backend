@@ -1,9 +1,10 @@
-import express from 'express'
 import { config } from 'dotenv';
 import ConnectDB from './db/index.js';
 import app from './app.js';
+
 config();
 const env = process.env
+
 
 ConnectDB()
     .then(() => {
