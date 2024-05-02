@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 const { Schema } = mongoose;
 
 
@@ -41,15 +42,21 @@ userSchema.pre('save', async function (next) {
 })
 
 userSchema.methods.comparePassword = async function (password) {
-        return await bcrypt.compare(password, this.password)
+    return await bcrypt.compare(password, this.password)
 }
 
 userSchema.methods.createAccessToken = async function () {
-    
+    jwt.sign({ _id: this._id, email: this.email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }, (err, token) => {
+        return token
+    })
 }
 
+// in the refres token we use short key like id not use whole data 
 userSchema.methods.createRefreshToken = async function () {
-    
+    jwt.sign({ _id: this._id, }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }, (err, token) => {
+        return token
+    })
+
 }
 
 export const UserModel = mongoose.model('User', userSchema)
